@@ -4,9 +4,10 @@ import { columns } from './Columns'
 import { getApplicationList } from '@/services/AppServices'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@/components/Loader'
+import { Application } from '@/types/types'
 
 export default function ClientIdTable() {
-  const { data, isFetching } = useQuery({
+  const { data, isFetching } = useQuery<Application[]>({
     queryKey: ['applications'],
     queryFn: getApplicationList,
   })
@@ -18,7 +19,7 @@ export default function ClientIdTable() {
       ) : (
         <DataTable
           columns={columns}
-          data={data.map((app: any) => {
+          data={data!.map((app: Application) => {
             return {
               id: app.id,
               name: app.name,

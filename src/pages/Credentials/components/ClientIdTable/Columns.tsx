@@ -4,13 +4,7 @@ import { MdDelete } from 'react-icons/md'
 import { ArrowUpDown } from 'lucide-react'
 import CopyCTA from '../../../../components/CopyCTA'
 import { Link } from 'react-router-dom'
-
-export type ClientId = {
-  id: string
-  name: string
-  clientId: string
-  createdAt: string
-}
+import { ClientId } from '@/types/types'
 
 export const columns: ColumnDef<ClientId>[] = [
   {

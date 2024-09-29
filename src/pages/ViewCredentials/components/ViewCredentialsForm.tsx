@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Label } from '@radix-ui/react-label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Application } from '@/types/types'
 
 type FormValues = {
   name: string
@@ -14,7 +15,7 @@ type FormValues = {
   newOrigin: string
 }
 
-function ViewCredentialsForm({ appData }: { appData: any }) {
+function ViewCredentialsForm({ appData }: { appData: Application }) {
   const [toggleAddOrigin, setToggleAddOrigin] = useState(false)
 
   const {
@@ -27,7 +28,7 @@ function ViewCredentialsForm({ appData }: { appData: any }) {
   } = useForm<FormValues>({
     defaultValues: {
       name: appData.name,
-      redirectUri: appData.redriectUris[0],
+      redirectUri: appData.redirectUris[0],
       origins: appData.origins.map((origin: string) => ({ origin })),
       newOrigin: '',
     },

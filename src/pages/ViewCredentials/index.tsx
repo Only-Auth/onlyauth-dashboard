@@ -7,10 +7,11 @@ import { useQuery } from '@tanstack/react-query'
 import { getApplicationDetails } from '@/services/AppServices'
 import AdditionalInfoSkeleton from './components/AdditionalInfoSkeleton'
 import ViewCredentialsFormSkeleton from './components/ViewCredentialsFormSkeleton'
+import { Application } from '@/types/types'
 
 function ViewCredentials() {
   const { id } = useParams()
-  const { data, isFetching } = useQuery({
+  const { data, isFetching } = useQuery<Application>({
     queryKey: ['application', id],
     queryFn: ({ queryKey }) => getApplicationDetails(queryKey[1]),
   })
@@ -27,7 +28,7 @@ function ViewCredentials() {
         {isFetching ? (
           <ViewCredentialsFormSkeleton />
         ) : (
-          <ViewCredentialsForm appData={data} />
+          <ViewCredentialsForm appData={data!} />
         )}
         {isFetching ? (
           <AdditionalInfoSkeleton />
@@ -37,23 +38,27 @@ function ViewCredentials() {
             <div className="mt-4">
               <p className="font-medium text-sm text-gray-500">Client ID</p>
               <div className="flex gap-2">
-                <p className="text-ellipsis overflow-hidden">{data.clientId}</p>
-                <CopyCTA text={data.clientId} />
+                <p className="text-ellipsis overflow-hidden">
+                  {data!.clientId}
+                </p>
+                <CopyCTA text={data!.clientId} />
               </div>
             </div>
             <div className="mt-4">
               <p className="font-medium text-sm text-gray-500">Client Secret</p>
               <div className="flex">
                 <div className="w-[90%]">
-                  <p className="text-ellipsis overflow-hidden">{data.secret}</p>
+                  <p className="text-ellipsis overflow-hidden">
+                    {data!.secret}
+                  </p>
                 </div>
-                <CopyCTA text={data.secret} />
+                <CopyCTA text={data!.secret} />
               </div>
             </div>
             <div className="mt-4">
               <p className="font-medium text-sm text-gray-500">Created At</p>
               <p className="text-ellipsis overflow-hidden">
-                {new Date(data.createdAt * 1000).toString()}
+                {new Date(data!.createdAt * 1000).toString()}
               </p>
             </div>
           </div>
