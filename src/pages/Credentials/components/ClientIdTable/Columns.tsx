@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 
 export type ClientId = {
   id: string
-  appName: string
+  name: string
   clientId: string
   createdAt: string
 }
@@ -15,13 +15,13 @@ export type ClientId = {
 export const columns: ColumnDef<ClientId>[] = [
   {
     header: 'App Name',
-    accessorKey: 'appName',
+    accessorKey: 'name',
     cell: ({ row }) => {
-      const appName: string = row.getValue('appName')
-      const clientId: string = row.getValue('clientId')
+      const name: string = row.getValue('name')
+      const id: string = row.original.id
       return (
-        <Link to={`client/${clientId}`} className="text-blue-700 underline">
-          {appName}
+        <Link to={`client/${id}`} className="text-blue-700 underline">
+          {name}
         </Link>
       )
     },
@@ -36,7 +36,7 @@ export const columns: ColumnDef<ClientId>[] = [
       return (
         <div className="flex items-center gap-x-2">
           <span>{formatted}</span>
-          <CopyCTA clientId={clientId} />
+          <CopyCTA text={clientId} />
         </div>
       )
     },
@@ -53,6 +53,10 @@ export const columns: ColumnDef<ClientId>[] = [
           />
         </div>
       )
+    },
+    cell: ({ row }) => {
+      const createdAt: number = row.getValue('createdAt')
+      return <span>{new Date(createdAt * 1000).toDateString()}</span>
     },
   },
   {

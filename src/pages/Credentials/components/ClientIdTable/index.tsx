@@ -1,31 +1,33 @@
-import { useEffect, useState } from 'react'
-
 import { DataTable } from './DataTable'
-import { ClientId, columns } from './Columns'
-import DUMMY_CLIENT_DATA from '../../data/dummyClientIds'
+import { columns } from './Columns'
 
-const ClientIdTable: React.FC = () => {
-  const [data, setData] = useState<ClientId[]>([])
-  async function getData(): Promise<ClientId[]> {
-    return new Promise((resolve) => {
-      resolve(DUMMY_CLIENT_DATA)
-    })
-  }
+import { getApplicationList } from '@/services/AppServices'
+import { useQuery } from '@tanstack/react-query'
+import Loader from '@/components/Loader'
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getData()
-      setData(result)
-    }
-
-    fetchData()
-  }, [])
+export default function ClientIdTable() {
+  const { data, isFetching } = useQuery({
+    queryKey: ['applications'],
+    queryFn: getApplicationList,
+  })
 
   return (
     <div className="container mx-auto py-4">
-      <DataTable columns={columns} data={data} />
+      {isFetching ? (
+        <Loader />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={data.map((app: any) => {
+            return {
+              id: app.id,
+              name: app.name,
+              clientId: app.clientId,
+              createdAt: app.createdAt,
+            }
+          })}
+        />
+      )}
     </div>
   )
 }
-
-export default ClientIdTable
