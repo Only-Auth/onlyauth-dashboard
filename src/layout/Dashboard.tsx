@@ -10,7 +10,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <div className="w-screen h-screen flex">
+      <div className="w-screen h-screen flex overflow-hidden">
         {/* LEFT SECTION */}
         {windowWidth > 1024 && (
           <div className="bg-white h-full lg:visible invisible p-10">
@@ -19,7 +19,7 @@ function DashboardLayout() {
         )}
 
         {/* RIGHT SECTION */}
-        <div className="flex-grow bg-[#f9fafb] p-8 ">
+        <div className="flex-grow bg-[#f9fafb] p-8 overflow-auto">
           <Header />
           <div className="pt-10">
             <Outlet />
