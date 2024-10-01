@@ -48,7 +48,7 @@ const router = createBrowserRouter([
             element: <ConsentScreen />,
           },
           {
-            path: 'client/:clientId',
+            path: ':id',
             element: <ConfigureConsent />,
           },
         ],
