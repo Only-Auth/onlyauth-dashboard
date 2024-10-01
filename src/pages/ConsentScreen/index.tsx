@@ -1,8 +1,14 @@
-import ClientApp from './components/ClientApp'
-
-const DUMMY_APPS = ['App 1', 'App 2', 'App 3', 'App 4', 'App 5']
+import { useQuery } from '@tanstack/react-query'
+import ApplicationTile from './components/ApplicationTile'
+import { getApplicationList } from '@/services/AppServices'
+import { Application } from '@/types/types'
+import Loader from '@/components/Loader'
 
 function ConsentScreen() {
+  const { data: Applications, isFetching } = useQuery<Application[]>({
+    queryKey: ['applications'],
+    queryFn: getApplicationList,
+  })
   return (
     <div>
       <h1 className="text-3xl font-semibold text-gray-800">Consent Screen</h1>
@@ -11,9 +17,11 @@ function ConsentScreen() {
         log in to your app.
       </p>
       <div className=" flex flex-col mt-10 gap-y-4">
-        {DUMMY_APPS.map((app, index) => (
-          <ClientApp title={app} id={index.toString()} />
-        ))}
+        {isFetching && <Loader />}
+        {!isFetching &&
+          Applications?.map((app) => (
+            <ApplicationTile key={app.id} id={app.id} title={app.name} />
+          ))}
       </div>
     </div>
   )

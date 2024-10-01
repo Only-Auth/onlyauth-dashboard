@@ -1,15 +1,7 @@
 export type Application = {
   allowedScopes: string[]
   clientId: string
-  consentScreen: {
-    appAddress: string
-    decription: string | null
-    developmentEmail: string
-    logo: string | null
-    message: string | null
-    name: string
-    title: string
-  }
+  consentScreen: ConsentScreen
   createdAt: number
   id: string
   updatedAt: number
@@ -19,6 +11,16 @@ export type Application = {
   redirectUris: string[]
   secret: string
   state: string
+}
+
+export type ConsentScreen = {
+  appAddress: string
+  decription: string | null
+  developerEmail: string
+  logo: string | null
+  message: string | null
+  name: string
+  title: string
 }
 
 export type ClientId = {

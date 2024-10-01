@@ -1,54 +1,49 @@
 import { IoArrowBack } from 'react-icons/io5'
-import { Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
 
-import { Input } from '@/components/ui/input'
-import { Label } from '@radix-ui/react-label'
+import { getApplicationDetails } from '@/services/AppServices'
+import { Application } from '@/types/types'
+import { useQuery } from '@tanstack/react-query'
+import ConfigureConsentSkeleton from './components/ConfigureConsentSkeleton'
+import ConfigureConsentForm from './components/ConfigureConsentForm'
 
 function ConfigureConsent() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { data, isFetching } = useQuery<Application>({
+    queryKey: ['application', id],
+    queryFn: ({ queryKey }) => getApplicationDetails(queryKey[1]),
+  })
+
+  const [isFormDirty, setIsFormDirty] = useState(false)
+
+  function handleBackAction() {
+    if (!isFormDirty) {
+      navigate(-1)
+      return
+    }
+  }
+
   return (
     <>
       <div className="flex items-center gap-x-4">
-        <Link to={'..'}>
-          <IoArrowBack size={20} />
-        </Link>
-        <p className="text-2xl font-semibold">Client details</p>
-      </div>
-      <div className="flex flex-col mt-10 gap-y-4">
-        <h1 className="text-xl">App Info :</h1>
-        <div className="pl-2 mb-2">
-          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label htmlFor="appname">Name</Label>
-            <Input type="text" id="appname" placeholder="Dummy" />
-            <p></p>
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="appicon">Icon</Label>
-            <Input id="appicon" type="file" />
-          </div>
+        <div className="cursor-pointer">
+          <IoArrowBack onClick={handleBackAction} size={20} />
         </div>
-        <h1 className="text-xl">Developer Info :</h1>
-        <div className="pl-2">
-          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label htmlFor="email">Email</Label>
-            <Input type="email" id="email" placeholder="example@email.com" />
-            <p></p>
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label htmlFor="address">App Address</Label>
-            <Input type="text" id="address" placeholder="awesomedummy.com" />
-            <p></p>
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label htmlFor="message">Message</Label>
-            <Input
-              type="text"
-              id="message"
-              placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing..."
-            />
-            <p></p>
-          </div>
-        </div>
+
+        <p className="text-2xl font-semibold">Configure Consent</p>
       </div>
+      {isFetching ? (
+        <ConfigureConsentSkeleton />
+      ) : (
+        <ConfigureConsentForm
+          appData={data?.consentScreen!}
+          formStateHandler={(value: boolean) => {
+            setIsFormDirty(value)
+          }}
+        />
+      )}
     </>
   )
 }
