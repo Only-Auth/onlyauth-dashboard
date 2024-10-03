@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import LogoPlaceholder from '@/assets/logo-placeholder.jpg'
 import { Button } from '@/components/ui/button'
+import Loader from '@/components/Loader'
 
 type FormValues = {
   title: string
@@ -15,10 +16,12 @@ type FormValues = {
 
 function ConsentDetails({
   onSubmit,
-  handleBack
+  handleBack,
+  loading,
 }: {
   onSubmit: (data: FormValues) => void
   handleBack: () => void
+  loading: boolean
 }) {
   const {
     register,
@@ -35,7 +38,6 @@ function ConsentDetails({
   })
 
   function submitHandler(data: FormValues) {
-    console.log(data)
     onSubmit(data)
   }
 
@@ -53,7 +55,7 @@ function ConsentDetails({
               placeholder="Dummy"
               {...register('title', { required: 'App title cannot be empty' })}
             />
-            <p>{errors.title?.message}</p>
+            <p className="text-red-500 text-xs">{errors.title?.message}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="appicon">Icon</Label>
@@ -102,7 +104,7 @@ function ConsentDetails({
                 },
               })}
             />
-            <p>{errors.email?.message}</p>
+            <p className="text-red-500 text-xs">{errors.email?.message}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
             <Label htmlFor="address">
@@ -111,12 +113,16 @@ function ConsentDetails({
             <Input
               type="text"
               id="address"
-              placeholder="awesomedummy.com"
+              placeholder="https://awesomedummy.com"
               {...register('address', {
                 required: 'Address cannot be empty',
+                pattern: {
+                  value: /^(https?:\/\/[^\s/$.?#].[^\s]*)$/,
+                  message: 'Invalid URL',
+                },
               })}
             />
-            <p>{errors.address?.message}</p>
+            <p className="text-red-500 text-xs">{errors.address?.message}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
             <Label htmlFor="message">Message</Label>
@@ -128,14 +134,20 @@ function ConsentDetails({
             />
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" onClick={handleBack} variant="secondary">
+            <Button
+              type="button"
+              disabled={loading}
+              onClick={handleBack}
+              variant="secondary"
+            >
               Back
             </Button>
             <Button
               className="bg-blue-600 
             "
+              disabled={loading}
             >
-              Create
+              {loading ? <Loader /> : 'Create'}
             </Button>
           </div>
         </div>

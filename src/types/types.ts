@@ -29,3 +29,13 @@ export type ClientId = {
   clientId: string
   createdAt: number
 }
+export type NewAppInfo = {
+  name: string
+  redirectUri: string[]
+  origins: string[]
+  title: string
+  logo: string | null
+  developerEmail: string
+  appAddress: string
+  message: string | null
+}

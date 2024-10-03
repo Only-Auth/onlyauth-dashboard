@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { NewAppInfo } from '@/types/types'
 import { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { MdDelete } from 'react-icons/md'
@@ -14,7 +15,13 @@ type FormValues = {
   newOrigin: string
 }
 
-function AppDetailsForm({ onSave }: { onSave: () => void }) {
+function AppDetailsForm({
+  defaultAppDetails,
+  onSave,
+}: {
+  defaultAppDetails: NewAppInfo
+  onSave: (data: FormValues) => void
+}) {
   const [toggleAddOrigin, setToggleAddOrigin] = useState(false)
 
   const {
@@ -24,7 +31,14 @@ function AppDetailsForm({ onSave }: { onSave: () => void }) {
     setValue,
     formState: { errors },
     handleSubmit,
-  } = useForm<FormValues>({})
+  } = useForm<FormValues>({
+    defaultValues: {
+      name: defaultAppDetails.name,
+      redirectUri: defaultAppDetails.redirectUri[0],
+      origins: defaultAppDetails.origins.map((origin) => ({ origin })),
+      newOrigin: '',
+    },
+  })
 
   const {
     fields: allowedOrigins,
@@ -41,7 +55,7 @@ function AppDetailsForm({ onSave }: { onSave: () => void }) {
 
   const submitHandler = (data: FormValues) => {
     console.log(data)
-    onSave()
+    onSave(data)
   }
 
   return (
@@ -54,10 +68,19 @@ function AppDetailsForm({ onSave }: { onSave: () => void }) {
           id="name"
           type="text"
           placeholder="Dummy"
-          {...register('name', { required: true })}
+          {...register('name', {
+            required: 'App name cannot be empty',
+            minLength: {
+              value: 3,
+              message: 'App name must be at least 3 characters',
+            },
+          })}
         />
         <p className="text-gray-500 text-sm">
           The name of auth client. The name is only used to identify the client
+        </p>
+        <p className="text-red-500 text-xs">
+          {errors.name && 'App name is required'}
         </p>
       </div>
 
@@ -144,10 +167,19 @@ function AppDetailsForm({ onSave }: { onSave: () => void }) {
           id="redirectUri"
           type="text"
           placeholder="http://localhost:3000"
-          {...register('redirectUri', { required: true })}
+          {...register('redirectUri', {
+            required: 'Redirect uri cannot be empty!',
+            pattern: {
+              value: /^(https?:\/\/)/,
+              message: 'Invalid URL',
+            },
+          })}
         />
         <p className="text-gray-500 text-sm">
           The URL to which the user will be redirected after granting permission
+        </p>
+        <p className="text-red-500 text-xs">
+          {errors.redirectUri && errors.redirectUri.message}
         </p>
       </div>
       <div className="flex justify-end">

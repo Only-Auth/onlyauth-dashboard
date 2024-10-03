@@ -1,3 +1,4 @@
+import { Application, NewAppInfo } from '@/types/types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
@@ -27,4 +28,39 @@ export async function getApplicationDetails(appId: any) {
   const applications: [] = await getApplicationList()
   const application: any = applications.find((app: any) => app.id === appId)
   return application
+}
+
+export async function createApplication(data: NewAppInfo) {
+  console.log(data)
+  const payload = {
+    name: data.name,
+    redirectUris: data.redirectUri,
+    allowedScopes: ['profile'],
+    consentScreen: {
+      name: data.name,
+      title: data.title,
+      developerEmail: data.developerEmail,
+      appAddress: data.appAddress,
+    },
+  }
+  console.log('payload', payload)
+
+  try {
+    const response = await axios.post(`${API_URL}/dashboard/`, payload, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('oa_db_token')}`,
+      },
+    })
+
+    console.log('response', response)
+
+    if (response.status !== 200 || !response.data) {
+      throw new Error(response.data.error || 'Failed to create application')
+    }
+
+    return response.data as Application
+  } catch (e: any) {
+    console.log(e)
+    throw new Error(e.response.data.error || 'Failed to create application')
+  }
 }
