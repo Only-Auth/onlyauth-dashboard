@@ -1,10 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { MdModeEditOutline } from 'react-icons/md'
 import { MdDelete } from 'react-icons/md'
 import { ArrowUpDown } from 'lucide-react'
 import CopyCTA from '../../../../components/CopyCTA'
 import { Link } from 'react-router-dom'
 import { ClientId } from '@/types/types'
+
 
 export const columns: ColumnDef<ClientId>[] = [
   {
@@ -58,18 +58,11 @@ export const columns: ColumnDef<ClientId>[] = [
     cell: ({ row }) => {
       const client = row.original
       return (
-        <div className="flex items-center justify-start gap-x-2">
-          <MdModeEditOutline
-            size={18}
-            className="cursor-pointer text-gray-600 hover:text-gray-800"
-            onClick={() => console.log('Edit', client)}
-          />
-          <MdDelete
-            size={18}
-            className="cursor-pointer text-gray-600 hover:text-red-500"
-            onClick={() => console.log('Delete', client)}
-          />
-        </div>
+        <MdDelete
+          size={18}
+          className="cursor-pointer text-gray-600 hover:text-red-500"
+          onClick={() => console.log('Delete', client)}
+        />
       )
     },
   },
