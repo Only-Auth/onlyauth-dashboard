@@ -14,20 +14,17 @@ export type Application = {
 }
 
 export type UpdatedAppDetails = {
+  allowedScopes?: string[]
+  clientId?: string
+  createdAt?: number
+  updatedAt?: number
+  isTrusted?: boolean
   name?: string
-  redirectUri?: string
   origins?: string[]
+  redirectUris?: string[]
+  secret?: string
+  state?: string
   consentScreen?: Partial<ConsentScreen>
-}
-
-export type updatedConsentDetails = {
-  name?: string
-  title?: string
-  message?: string | null
-  logo?: string | null
-  developerEmail?: string
-  appAddress?: string
-  decription?: string | null
 }
 
 export type ConsentScreen = {

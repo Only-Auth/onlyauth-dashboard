@@ -86,6 +86,7 @@ export async function updateApplication(
   data: UpdatedAppDetails,
   appId: string
 ) {
+  if (!appId) throw new Error('Application ID is required')
   try {
     const response = await axios.post(`${API_URL}/dashboard/${appId}`, data, {
       headers: {

@@ -1,36 +1,56 @@
 import { IoArrowBack } from 'react-icons/io5'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 
-import { getApplicationDetails } from '@/services/AppServices'
-import { Application } from '@/types/types'
-import { useQuery } from '@tanstack/react-query'
+import {
+  getApplicationDetails,
+  updateApplication,
+} from '@/services/AppServices'
+import { Application, UpdatedAppDetails } from '@/types/types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import ConfigureConsentSkeleton from './components/ConfigureConsentSkeleton'
 import ConfigureConsentForm from './components/ConfigureConsentForm'
+import { toast } from '@/hooks/use-toast'
 
 function ConfigureConsent() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const { data, isFetching } = useQuery<Application>({
     queryKey: ['application', id],
     queryFn: ({ queryKey }) => getApplicationDetails(queryKey[1]),
   })
 
-  const [isFormDirty, setIsFormDirty] = useState(false)
+  const { mutate, isPending } = useMutation({
+    mutationFn: (updatedInfo: UpdatedAppDetails) =>
+      updateApplication(updatedInfo, id!),
+    onSuccess: () => {
+      console.log('Consent screen updated')
+      queryClient.invalidateQueries({
+        queryKey: ['application', id],
+      })
+      toast({
+        description: 'Consent screen updated successfully',
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Something went wrong !',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  })
 
-  function handleBackAction() {
-    if (!isFormDirty) {
-      navigate(-1)
-      return
-    }
+  function handleSave(consentScreenData: UpdatedAppDetails) {
+    mutate(consentScreenData)
   }
 
   return (
     <>
       <div className="flex items-center gap-x-4">
-        <div className="cursor-pointer">
-          <IoArrowBack onClick={handleBackAction} size={20} />
-        </div>
+        <Link to={'..'} className="cursor-pointer">
+          <IoArrowBack size={20} />
+        </Link>
 
         <p className="text-2xl font-semibold">Configure Consent</p>
       </div>
@@ -39,9 +59,8 @@ function ConfigureConsent() {
       ) : (
         <ConfigureConsentForm
           appData={data?.consentScreen!}
-          formStateHandler={(value: boolean) => {
-            setIsFormDirty(value)
-          }}
+          loading={isPending}
+          onSave={handleSave}
         />
       )}
     </>
