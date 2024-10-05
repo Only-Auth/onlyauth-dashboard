@@ -79,7 +79,7 @@ function Navbar() {
   const { handleLogOut } = useAuth()
   return (
     <>
-      <p className="text-3xl font-bold">Dasboard</p>
+      <p className="text-3xl font-lobster">Onlyauth</p>
       <div className="flex flex-col h-full justify-between pb-5">
         <div className="flex flex-col gap-2 mt-5">
           <Navitem
@@ -92,11 +92,7 @@ function Navbar() {
             label="Consent Screen"
             linkTo="/consent"
           />
-          <Navitem
-            icon={<AnalyticsIcon />}
-            label="Analytics"
-            linkTo="/analytics"
-          />
+          <Navitem icon={<AnalyticsIcon />} label="About" linkTo="/about" />
         </div>
         <LogOutAlertDialog handleLogOut={handleLogOut} />
       </div>

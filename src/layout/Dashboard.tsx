@@ -13,7 +13,7 @@ function DashboardLayout() {
       <div className="w-screen h-screen flex overflow-hidden">
         {/* LEFT SECTION */}
         {windowWidth > 1024 && (
-          <div className="bg-white h-full lg:visible invisible p-10">
+          <div className="bg-white h-full lg:visible invisible p-8">
             <Navbar />
           </div>
         )}
