@@ -23,7 +23,7 @@ function ViewCredentialsForm({
   loading,
 }: {
   appData: Application
-  onSave: (data: any) => void
+  onSave: (data: any, resetForm: (isSuccess: boolean) => void) => void
   loading: boolean
 }) {
   const [toggleAddOrigin, setToggleAddOrigin] = useState(false)
@@ -31,6 +31,7 @@ function ViewCredentialsForm({
   const {
     register,
     control,
+    reset,
     getValues,
     setValue,
     formState: { errors, dirtyFields },
@@ -79,12 +80,21 @@ function ViewCredentialsForm({
         name: data.name,
       }
     }
-    if (dirtyFields.redirectUri) updatedData.redirectUri = data.redirectUri
+    if (dirtyFields.redirectUri)
+      updatedData.redirectUris = data.redirectUri.split(',')
     if (dirtyFields.origins && areOriginsDirty())
       updatedData.origins = data.origins.map((origin) => origin.origin)
 
     if (Object.keys(updatedData).length < 1) return
-    onSave(updatedData)
+    onSave(updatedData, resetForm)
+  }
+
+  function resetForm(isSuccess: boolean) {
+    if (isSuccess) {
+      reset({}, { keepDirtyValues: true })
+    } else {
+      reset()
+    }
   }
 
   return (

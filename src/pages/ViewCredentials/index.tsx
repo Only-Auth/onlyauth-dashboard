@@ -43,9 +43,19 @@ function ViewCredentials() {
     },
   })
 
-  function handleCredentialUpdate(updatedInfo: UpdatedAppDetails) {
+  function handleCredentialUpdate(
+    updatedInfo: UpdatedAppDetails,
+    resetForm: (isSuccess: boolean) => void
+  ) {
     console.log('Update credentials')
-    mutate(updatedInfo)
+    mutate(updatedInfo, {
+      onSuccess: () => {
+        resetForm(true)
+      },
+      onError: () => {
+        resetForm(false)
+      },
+    })
   }
 
   return (
@@ -56,7 +66,7 @@ function ViewCredentials() {
         </Link>
         <p className="text-2xl font-semibold">Client details</p>
       </div>
-      <div className="sm:p-10 p-4 flex sm:flex-row flex-col sm:gap-20">
+      <div className="sm:p-10 p-4 flex sm:flex-row flex-col sm:gap-10">
         {isFetching ? (
           <ViewCredentialsFormSkeleton />
         ) : (
@@ -69,7 +79,7 @@ function ViewCredentials() {
         {isFetching ? (
           <AdditionalInfoSkeleton />
         ) : (
-          <div className="my-4 bg-gray-100 rounded-xl p-6 w-full max-w-[500px] h-max">
+          <div className="my-4 bg-gray-100 rounded-xl p-6 sm:w-[50%] w-full  max-w-[450px] h-max">
             <h1 className="text-lg font-semibold">Additional Info :</h1>
             <div className="mt-4">
               <p className="font-medium text-sm text-gray-500">Client ID</p>
