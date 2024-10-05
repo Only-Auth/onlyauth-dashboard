@@ -3,18 +3,50 @@ import { IoArrowBack } from 'react-icons/io5'
 
 import CopyCTA from '@/components/CopyCTA'
 import ViewCredentialsForm from './components/ViewCredentialsForm'
-import { useQuery } from '@tanstack/react-query'
-import { getApplicationDetails } from '@/services/AppServices'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  getApplicationDetails,
+  updateApplication,
+} from '@/services/AppServices'
 import AdditionalInfoSkeleton from './components/AdditionalInfoSkeleton'
 import ViewCredentialsFormSkeleton from './components/ViewCredentialsFormSkeleton'
-import { Application } from '@/types/types'
+import { Application, UpdatedAppDetails } from '@/types/types'
+import { useToast } from '@/hooks/use-toast'
 
 function ViewCredentials() {
   const { id } = useParams()
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
   const { data, isFetching } = useQuery<Application>({
     queryKey: ['application', id],
     queryFn: ({ queryKey }) => getApplicationDetails(queryKey[1]),
   })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (updatedInfo: UpdatedAppDetails) =>
+      updateApplication(updatedInfo, id!),
+    onSuccess: () => {
+      console.log('Application updated')
+      queryClient.invalidateQueries({
+        queryKey: ['applications', id],
+      })
+      toast({
+        description: 'Application updated successfully',
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Something went wrong !',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  })
+
+  function handleCredentialUpdate(updatedInfo: UpdatedAppDetails) {
+    console.log('Update credentials')
+    mutate(updatedInfo)
+  }
 
   return (
     <>
@@ -28,7 +60,11 @@ function ViewCredentials() {
         {isFetching ? (
           <ViewCredentialsFormSkeleton />
         ) : (
-          <ViewCredentialsForm appData={data!} />
+          <ViewCredentialsForm
+            loading={isPending}
+            onSave={handleCredentialUpdate}
+            appData={data!}
+          />
         )}
         {isFetching ? (
           <AdditionalInfoSkeleton />

@@ -1,10 +1,12 @@
 import { useFieldArray, useForm } from 'react-hook-form'
 import { MdDelete } from 'react-icons/md'
 import { useState } from 'react'
+
 import { Label } from '@radix-ui/react-label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Application } from '@/types/types'
+import { Application, UpdatedAppDetails } from '@/types/types'
+import Loader from '@/components/Loader'
 
 type FormValues = {
   name: string
@@ -15,7 +17,15 @@ type FormValues = {
   newOrigin: string
 }
 
-function ViewCredentialsForm({ appData }: { appData: Application }) {
+function ViewCredentialsForm({
+  appData,
+  onSave,
+  loading,
+}: {
+  appData: Application
+  onSave: (data: any) => void
+  loading: boolean
+}) {
   const [toggleAddOrigin, setToggleAddOrigin] = useState(false)
 
   const {
@@ -44,13 +54,17 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
   })
 
   function isFormDirty() {
+    if (loading) return true
     if (Object.keys(dirtyFields).length === 0) {
       return false
     } else if (dirtyFields.name || dirtyFields.redirectUri) {
       return true
     } else if (dirtyFields.origins) {
-      return JSON.stringify(allowedOrigins) !== JSON.stringify(appData.origins)
+      return areOriginsDirty()
     }
+  }
+  function areOriginsDirty() {
+    return JSON.stringify(allowedOrigins) !== JSON.stringify(appData.origins)
   }
 
   function handleAddOrigin() {
@@ -58,18 +72,19 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
   }
 
   const submitHandler = (data: FormValues) => {
-    const updateAppData = {
-      ...appData,
-      name: data.name,
-      redirectUris: [data.redirectUri],
-      origins: data.origins.map((origin) => origin.origin),
-      consentScreen: {
-        ...appData.consentScreen,
+    const updatedData: UpdatedAppDetails = {}
+    if (dirtyFields.name) {
+      updatedData.name = data.name
+      updatedData.consentScreen = {
         name: data.name,
-      },
+      }
     }
+    if (dirtyFields.redirectUri) updatedData.redirectUri = data.redirectUri
+    if (dirtyFields.origins && areOriginsDirty())
+      updatedData.origins = data.origins.map((origin) => origin.origin)
 
-    console.log(updateAppData)
+    if (Object.keys(updatedData).length < 1) return
+    onSave(updatedData)
   }
 
   return (
@@ -82,6 +97,7 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
           id="name"
           type="text"
           placeholder="Dummy"
+          disabled={loading}
           {...register('name', { required: true })}
         />
         <p className="text-gray-500 text-sm">
@@ -158,7 +174,7 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
             </div>
           </div>
         ) : (
-          <Button onClick={handleAddOrigin} type="button">
+          <Button onClick={handleAddOrigin} type="button" disabled={loading}>
             Add Origin
           </Button>
         )}
@@ -172,6 +188,7 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
           id="redirectUri"
           type="text"
           placeholder="http://localhost:3000"
+          disabled={loading}
           {...register('redirectUri', { required: true })}
         />
         <p className="text-gray-500 text-sm">
@@ -184,7 +201,7 @@ function ViewCredentialsForm({ appData }: { appData: Application }) {
           className="w-[30%] rounded-lg bg-blue-600"
           disabled={!isFormDirty()}
         >
-          Save
+          {loading ? <Loader /> : 'Save'}
         </Button>
       </div>
     </form>

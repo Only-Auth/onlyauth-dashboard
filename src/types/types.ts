@@ -13,6 +13,23 @@ export type Application = {
   state: string
 }
 
+export type UpdatedAppDetails = {
+  name?: string
+  redirectUri?: string
+  origins?: string[]
+  consentScreen?: Partial<ConsentScreen>
+}
+
+export type updatedConsentDetails = {
+  name?: string
+  title?: string
+  message?: string | null
+  logo?: string | null
+  developerEmail?: string
+  appAddress?: string
+  decription?: string | null
+}
+
 export type ConsentScreen = {
   appAddress: string
   decription: string | null
@@ -29,6 +46,7 @@ export type ClientId = {
   clientId: string
   createdAt: number
 }
+
 export type NewAppInfo = {
   name: string
   redirectUri: string[]

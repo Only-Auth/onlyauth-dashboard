@@ -1,4 +1,4 @@
-import { Application, NewAppInfo } from '@/types/types'
+import { Application, NewAppInfo, UpdatedAppDetails } from '@/types/types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
@@ -31,7 +31,6 @@ export async function getApplicationDetails(appId: any) {
 }
 
 export async function createApplication(data: NewAppInfo) {
-  console.log(data)
   const payload = {
     name: data.name,
     redirectUris: data.redirectUri,
@@ -43,7 +42,6 @@ export async function createApplication(data: NewAppInfo) {
       appAddress: data.appAddress,
     },
   }
-  console.log('payload', payload)
 
   try {
     const response = await axios.post(`${API_URL}/dashboard/`, payload, {
@@ -62,5 +60,46 @@ export async function createApplication(data: NewAppInfo) {
   } catch (e: any) {
     console.log(e)
     throw new Error(e.response.data.error || 'Failed to create application')
+  }
+}
+
+export async function deleteApplication(appId: string) {
+  try {
+    const response = await axios.delete(`${API_URL}/dashboard/${appId}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('oa_db_token')}`,
+      },
+    })
+
+    if (response.status !== 200 || !response.data) {
+      throw new Error(response.data.error || 'Failed to delete application')
+    }
+
+    return response.data
+  } catch (e: any) {
+    console.log(e)
+    throw new Error(e.response.data.error || 'Failed to create application')
+  }
+}
+
+export async function updateApplication(
+  data: UpdatedAppDetails,
+  appId: string
+) {
+  try {
+    const response = await axios.post(`${API_URL}/dashboard/${appId}`, data, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('oa_db_token')}`,
+      },
+    })
+
+    if (response.status !== 200 || !response.data) {
+      throw new Error(response.data.error || 'Failed to update application')
+    }
+
+    return response.data
+  } catch (e: any) {
+    console.log(e)
+    throw new Error(e.response.data.error || 'Failed to update application')
   }
 }
