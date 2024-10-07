@@ -64,12 +64,19 @@ export async function createApplication(data: NewAppInfo) {
 }
 
 export async function deleteApplication(appId: string) {
+  const payload: Partial<Application> = {
+    state: 'DELETED',
+  }
   try {
-    const response = await axios.delete(`${API_URL}/dashboard/${appId}`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('oa_db_token')}`,
-      },
-    })
+    const response = await axios.post(
+      `${API_URL}/dashboard/${appId}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('oa_db_token')}`,
+        },
+      }
+    )
 
     if (response.status !== 200 || !response.data) {
       throw new Error(response.data.error || 'Failed to delete application')

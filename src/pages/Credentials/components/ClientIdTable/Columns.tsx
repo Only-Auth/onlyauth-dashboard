@@ -1,10 +1,9 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { MdDelete } from 'react-icons/md'
 import { ArrowUpDown } from 'lucide-react'
 import CopyCTA from '../../../../components/CopyCTA'
 import { Link } from 'react-router-dom'
 import { ClientId } from '@/types/types'
-
+import DeleteCTA from '@/components/DeleteCTA'
 
 export const columns: ColumnDef<ClientId>[] = [
   {
@@ -57,13 +56,7 @@ export const columns: ColumnDef<ClientId>[] = [
     header: 'Actions',
     cell: ({ row }) => {
       const client = row.original
-      return (
-        <MdDelete
-          size={18}
-          className="cursor-pointer text-gray-600 hover:text-red-500"
-          onClick={() => console.log('Delete', client)}
-        />
-      )
+      return <DeleteCTA id={client.id} />
     },
   },
 ]
