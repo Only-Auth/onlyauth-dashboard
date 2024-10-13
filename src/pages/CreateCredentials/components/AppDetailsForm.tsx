@@ -71,8 +71,8 @@ function AppDetailsForm({
           {...register('name', {
             required: 'App name cannot be empty',
             minLength: {
-              value: 3,
-              message: 'App name must be at least 3 characters',
+              value: 5,
+              message: 'App name must be at least 5 characters',
             },
           })}
         />
@@ -101,7 +101,11 @@ function AppDetailsForm({
                   <Input
                     type="text"
                     {...register(`origins.${index}.origin`, {
-                      required: true,
+                      required: 'Origin is required',
+                      pattern: {
+                        value: /^(https?:\/\/)/,
+                        message: 'Invalid URL',
+                      },
                     })}
                   />
 
@@ -113,6 +117,9 @@ function AppDetailsForm({
                     size={24}
                   />
                 </div>
+                <p className="text-red-500 text-xs pt-2">
+                  {errors?.origins?.[index]?.origin?.message}
+                </p>
               </div>
             ))
           )}
