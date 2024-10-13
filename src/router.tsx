@@ -3,7 +3,6 @@ import { createBrowserRouter } from 'react-router-dom'
 import DashboardLayout from './layout/Dashboard'
 import Credentials from './pages/Credentials'
 import ConsentScreen from './pages/ConsentScreen'
-import Analytics from './pages/Analytics'
 import CreateCredentials from './pages/CreateCredentials'
 import ViewCredentials from './pages/ViewCredentials'
 import SectionLayout from './layout/Section'
@@ -52,10 +51,6 @@ const router = createBrowserRouter([
             element: <ConfigureConsent />,
           },
         ],
-      },
-      {
-        path: '/about',
-        element: <Analytics />,
       },
     ],
   },
