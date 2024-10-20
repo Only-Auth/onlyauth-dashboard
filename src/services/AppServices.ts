@@ -2,7 +2,9 @@ import { Application, NewAppInfo, UpdatedAppDetails } from '@/types/types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = import.meta.env.VITE_BASE_API_URL 
+
+const API_URL = import.meta.env.VITE_BASE_API_URL || 'http://localhost:8000'
+
 export async function getApplicationList() {
   const token = Cookies.get('oa_db_token')
   try {
