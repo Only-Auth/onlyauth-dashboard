@@ -1,7 +1,7 @@
-import { Application, NewAppInfo, UpdatedAppDetails } from '@/types/types'
+import { Application, UpdatedAppDetails } from '@/types/types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
-
+import { handleUpload } from './FirebaseServices'
 
 const API_URL = import.meta.env.VITE_BASE_API_URL || 'http://localhost:8000'
 
@@ -31,16 +31,25 @@ export async function getApplicationDetails(appId: any) {
   return application
 }
 
-export async function createApplication(data: NewAppInfo) {
+export async function createApplication({
+  appData,
+  file,
+}: {
+  appData: any
+  file: File
+}) {
+  const downloadURL = await handleUpload(file)
+  console.log('downloadURL', downloadURL)
   const payload = {
-    name: data.name,
-    redirectUris: data.redirectUri,
+    name: appData.name,
+    redirectUris: appData.redirectUri,
     allowedScopes: ['profile'],
     consentScreen: {
-      name: data.name,
-      title: data.title,
-      developerEmail: data.developerEmail,
-      appAddress: data.appAddress,
+      name: appData.name,
+      title: appData.title,
+      logo: downloadURL,
+      developerEmail: appData.developerEmail,
+      appAddress: appData.appAddress,
     },
   }
 

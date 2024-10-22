@@ -19,7 +19,7 @@ function ConsentDetails({
   handleBack,
   loading,
 }: {
-  onSubmit: (data: FormValues) => void
+  onSubmit: (data: FormValues, file: File) => void
   handleBack: () => void
   loading: boolean
 }) {
@@ -38,7 +38,10 @@ function ConsentDetails({
   })
 
   function submitHandler(data: FormValues) {
-    onSubmit(data)
+    if (!img.file) {
+      return
+    }
+    onSubmit(data, img.file!)
   }
 
   return (
@@ -47,7 +50,7 @@ function ConsentDetails({
         <div className="pl-2 mb-2">
           <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
             <Label htmlFor="appname">
-              Title<span className="text-red-600"> *</span>
+              Title<span className="text-red-600">*</span>
             </Label>
             <Input
               type="text"
@@ -58,7 +61,9 @@ function ConsentDetails({
             <p className="text-red-500 text-xs">{errors.title?.message}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="appicon">Icon</Label>
+            <Label htmlFor="appicon">
+              Icon<span className="text-red-600">*</span>
+            </Label>
             <div className="flex items-center gap-2 border-1 rounded-md shadow-sm">
               <img
                 className="w-[40%] aspect-square object-cover rounded-tl-md rounded-bl-md"
@@ -83,6 +88,7 @@ function ConsentDetails({
                       : null,
                   })
                 }}
+                required
               />
             </div>
           </div>

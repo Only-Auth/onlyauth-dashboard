@@ -84,7 +84,8 @@ function CreateCredentials() {
     setOpenFormIndex(1)
   }
 
-  function onSubmitConsentDetails(data: any) {
+  function onSubmitConsentDetails(data: any, file: File) {
+    console.log(data)
     const appData = {
       ...appInfo,
       title: data.title,
@@ -94,7 +95,7 @@ function CreateCredentials() {
       message: data.message,
     }
     setAppInfo(appData)
-    createAppMutation.mutate(appData)
+    createAppMutation.mutate({ appData, file })
   }
 
   return (
