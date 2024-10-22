@@ -18,6 +18,11 @@ function ConsentScreen() {
       </p>
       <div className=" flex flex-col mt-10 gap-y-4">
         {isFetching && <Loader />}
+        {!isFetching && Applications?.length === 0 && (
+          <div className="w-full h-[400px] flex items-center justify-center">
+            No apps found!
+          </div>
+        )}
         {!isFetching &&
           Applications?.map((app) => (
             <ApplicationTile key={app.id} id={app.id} title={app.name} />
