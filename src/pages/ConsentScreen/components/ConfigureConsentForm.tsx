@@ -1,12 +1,12 @@
 import { useForm } from 'react-hook-form'
-// import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Input } from '@/components/ui/input'
 import { ConsentScreen, UpdatedAppDetails } from '@/types/types'
 import { Label } from '@radix-ui/react-label'
-// import LogoPlaceholder from '@/assets/logo-placeholder.jpg'
 import { Button } from '@/components/ui/button'
 import Loader from '@/components/Loader'
+import ImageUploader from './ImageUploader'
 
 type FormValues = {
   name: string
@@ -20,12 +20,20 @@ type FormValues = {
 
 function ConfigureConsentForm({
   appData,
-  onSave,
   loading,
+  onSave,
 }: {
-  appData: ConsentScreen
+  appData: ConsentScreen | undefined
   loading: boolean
-  onSave: (data: UpdatedAppDetails) => void
+  onSave: ({
+    data,
+    appName,
+    file,
+  }: {
+    data: UpdatedAppDetails
+    appName: string
+    file: File | undefined
+  }) => void
 }) {
   const {
     register,
@@ -33,121 +41,101 @@ function ConfigureConsentForm({
     handleSubmit,
   } = useForm<FormValues>({
     defaultValues: {
-      name: appData.name,
-      title: appData.title,
-      description: appData.decription || '',
-      email: appData.developerEmail,
-      address: appData.appAddress,
-      message: appData.message || '',
-      logo: appData.logo || '',
+      name: appData!.name,
+      title: appData!.title,
+      description: appData!.description || '',
+      email: appData!.developerEmail,
+      address: appData!.appAddress,
+      message: appData!.message || '',
+      logo: appData!.logo || '',
     },
   })
 
-  // const [img, setImg] = useState<{
-  //   src: string | null
-  //   file: File | null
-  // }>({
-  //   src: appData.logo,
-  //   file: null,
-  // })
+  const [img, setImg] = useState<{
+    src: string | null
+    file: File | undefined
+  }>({
+    src: appData!.logo,
+    file: undefined,
+  })
 
-  // useEffect(() => {
-  //   formStateHandler(isDirty || isImageFieldDirty())
-  // }, [isDirty, img])
-
-  // function isImageFieldDirty() {
-  //   return img.src !== appData.logo
-  // }
+  function isImageFieldDirty() {
+    return img.src !== appData!.logo
+  }
 
   function submitHandler(data: FormValues) {
-    if (!isDirty) {
+    if (!isFormDirty()) {
       console.log('No changes made')
       return
     }
     const updatedData: UpdatedAppDetails = {
       consentScreen: {},
     }
+    if (dirtyFields.title) {
+      updatedData.consentScreen!.title = data.title
+    }
+    if (dirtyFields.description) {
+      updatedData.consentScreen!.description = data.description
+    }
     if (dirtyFields.logo) {
       updatedData.consentScreen!.logo = data.logo
-    }
-    if (dirtyFields.address) {
-      updatedData.consentScreen!.appAddress = data.address
     }
     if (dirtyFields.email) {
       updatedData.consentScreen!.developerEmail = data.email
     }
+    if (dirtyFields.address) {
+      updatedData.consentScreen!.appAddress = data.address
+    }
     if (dirtyFields.message) {
       updatedData.consentScreen!.message = data.message
     }
-    if (dirtyFields.title) {
-      updatedData.consentScreen!.title = data.title
+    if (isImageFieldDirty()) {
+      updatedData.consentScreen!.logo = img.src!
     }
+    onSave({ data: updatedData, appName: data.name, file: img.file })
+  }
 
-    onSave(updatedData)
+  function isFormDirty() {
+    return isDirty || isImageFieldDirty()
   }
 
   return (
     <form onSubmit={handleSubmit(submitHandler)}>
       <div className="flex flex-col mt-10 gap-y-4">
-        <h1 className="text-xl">App Info :</h1>
+        <h1 className="text-xl">General Info :</h1>
         <div className="pl-2 mb-2">
           <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label className="font-semibold" htmlFor="appname">
-              Name
+            <Label className="font-semibold" htmlFor="title">
+              Title<span className="text-red-600">*</span>
             </Label>
             <Input
               type="text"
-              id="appname"
+              id="title"
               placeholder="Dummy"
-              disabled
-              {...register('name', { required: 'App name cannot be empty' })}
+              {...register('title', { required: 'Title cannot be empty' })}
             />
-            <p>{errors.name?.message}</p>
+            <p>{errors.title?.message}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-            <Label className="font-semibold" htmlFor="icon">
-              Icon Url
+            <Label className="font-semibold" htmlFor="description">
+              Description
             </Label>
             <Input
-              placeholder="http://via.placeholder.com/1280x720"
-              {...register('logo', {
-                pattern: {
-                  value: /^(http|https):\/\/[^ "]+$/,
-                  message: 'Invalid URL!',
-                },
-              })}
+              type="text"
+              id="description"
+              placeholder="Dummy description"
+              {...register('description')}
             />
-            <p className="text-red-500 text-xs">{errors.logo?.message}</p>
+            <p>{errors.description?.message}</p>
           </div>
-          {/* <div className="grid w-full max-w-sm items-center gap-1.5">
+          <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="appicon">Icon</Label>
-            <div className="flex items-center gap-2 border-1 rounded-md shadow-sm">
-              <img
-                className="w-[40%] aspect-square object-cover rounded-tl-md rounded-bl-md"
-                src={img.src ?? LogoPlaceholder}
-              />
-              <Input
-                className="bg-transparent shadow-none border-none cursor-pointer"
-                id="appicon"
-                type="file"
-                onChange={(e) => {
-                  if (e.target.files?.length === 0) {
-                    setImg({
-                      file: null,
-                      src: null,
-                    })
-                    return
-                  }
-                  setImg({
-                    file: e.target.files ? e.target.files[0] : null,
-                    src: e.target.files
-                      ? URL.createObjectURL(e.target.files?.[0])
-                      : null,
-                  })
-                }}
-              />
-            </div>
-          </div> */}
+            <ImageUploader
+              src={img.src}
+              selectLogo={setImg}
+              loading={loading}
+            />
+          </div>
         </div>
         <h1 className="text-xl">Developer Info :</h1>
         <div className="pl-2">
@@ -201,7 +189,7 @@ function ConfigureConsentForm({
           <div className="grid w-full max-w-sm items-center justify-end gap-1.5 my-4">
             <Button
               className="bg-blue-600 w-max"
-              disabled={!isDirty || loading}
+              disabled={!isFormDirty() || loading}
             >
               {loading ? <Loader /> : 'Save'}
             </Button>

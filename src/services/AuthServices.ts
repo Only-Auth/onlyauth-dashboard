@@ -1,6 +1,25 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 const API_URL = import.meta.env.VITE_BASE_API_URL || 'http://localhost:8000'
+
+export async function getUserId() {
+  const token = Cookies.get('oa_db_token')
+  try {
+    const response = await axios.get(`${API_URL}/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    
+    if (response.status !== 200 || !response.data) {
+      throw new Error(response.data.error || 'Failed to fetch user')
+    }
+    return response.data.id
+  } catch (e: any) {
+    throw new Error(e.response?.data?.error || 'Failed to fetch user')
+  }
+}
 
 export async function signIn({
   email,

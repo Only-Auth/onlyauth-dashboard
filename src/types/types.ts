@@ -29,7 +29,7 @@ export type UpdatedAppDetails = {
 
 export type ConsentScreen = {
   appAddress: string
-  decription: string | null
+  description: string | null
   developerEmail: string
   logo: string | null
   message: string | null
@@ -53,4 +53,11 @@ export type NewAppInfo = {
   developerEmail: string
   appAddress: string
   message: string | null
+}
+
+export type User = {
+  id: string
+  email: string
+  name: string
+  picture: string | null
 }

@@ -2,10 +2,9 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 import { storage } from '@/firebase'
 
-const storageRef = ref(storage, 'icons')
-
-async function handleUpload(file: File) {
-  const fileRef = ref(storageRef, `icons/${file.name}`)
+async function handleUpload(file: File, appName: string, userId: string) {
+  const storageRef = ref(storage, userId)
+  const fileRef = ref(storageRef, appName)
 
   try {
     await uploadBytes(fileRef, file)

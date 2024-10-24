@@ -2,6 +2,7 @@ import { Application, UpdatedAppDetails } from '@/types/types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { handleUpload } from './FirebaseServices'
+import { getUserId } from './AuthServices'
 
 const API_URL = import.meta.env.VITE_BASE_API_URL || 'http://localhost:8000'
 
@@ -38,7 +39,8 @@ export async function createApplication({
   appData: any
   file: File
 }) {
-  const downloadURL = await handleUpload(file)
+  const userId = await getUserId()
+  const downloadURL = await handleUpload(file, appData.name, userId)
   console.log('downloadURL', downloadURL)
   const payload = {
     name: appData.name,
@@ -100,10 +102,24 @@ export async function deleteApplication(appId: string) {
 }
 
 export async function updateApplication(
-  data: UpdatedAppDetails,
+  {
+    data,
+    appName,
+    file,
+  }: {
+    data: UpdatedAppDetails
+    appName: string
+    file?: File
+  },
   appId: string
 ) {
   if (!appId) throw new Error('Application ID is required')
+
+  if (data.consentScreen?.logo && file) {
+    const userId = await getUserId()
+    const downloadURL = await handleUpload(file, appName, userId)
+    data.consentScreen.logo = downloadURL
+  }
   try {
     const response = await axios.post(`${API_URL}/dashboard/${appId}`, data, {
       headers: {

@@ -1,5 +1,5 @@
 import { IoArrowBack } from 'react-icons/io5'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import {
   getApplicationDetails,
@@ -14,15 +14,32 @@ import { toast } from '@/hooks/use-toast'
 function ConfigureConsent() {
   const { id } = useParams()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const { data, isFetching } = useQuery<Application>({
     queryKey: ['application', id],
     queryFn: ({ queryKey }) => getApplicationDetails(queryKey[1]),
   })
 
+  if (!isFetching && !data) {
+    navigate('/consent', { replace: true })
+    toast({
+      title: 'Something went wrong !',
+      description: "The app ID doesn't exist",
+      variant: 'destructive',
+    })
+  }
+
   const { mutate, isPending } = useMutation({
-    mutationFn: (updatedInfo: UpdatedAppDetails) =>
-      updateApplication(updatedInfo, id!),
+    mutationFn: ({
+      data,
+      appName,
+      file,
+    }: {
+      data: UpdatedAppDetails
+      appName: string
+      file: File | undefined
+    }) => updateApplication({ data, appName, file }, id!),
     onSuccess: () => {
       console.log('Consent screen updated')
       queryClient.invalidateQueries({
@@ -41,8 +58,16 @@ function ConfigureConsent() {
     },
   })
 
-  function handleSave(consentScreenData: UpdatedAppDetails) {
-    mutate(consentScreenData)
+  function handleSave({
+    data,
+    appName,
+    file,
+  }: {
+    data: UpdatedAppDetails
+    appName: string
+    file: File | undefined
+  }) {
+    mutate({ data, appName, file })
   }
 
   return (
@@ -52,13 +77,13 @@ function ConfigureConsent() {
           <IoArrowBack size={20} />
         </Link>
 
-        <p className="text-2xl font-semibold">Configure Consent</p>
+        <p className="text-2xl font-semibold">Configure Consent Screen</p>
       </div>
       {isFetching ? (
         <ConfigureConsentSkeleton />
       ) : (
         <ConfigureConsentForm
-          appData={data?.consentScreen!}
+          appData={data?.consentScreen}
           loading={isPending}
           onSave={handleSave}
         />

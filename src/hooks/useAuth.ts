@@ -5,14 +5,14 @@ import { signIn, signUp } from '@/services/AuthServices'
 import { useToast } from './use-toast'
 
 export function useAuth() {
-  let location = useLocation()
+  const location = useLocation()
   const navigate = useNavigate()
   const { toast } = useToast()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  let from = location.state?.from?.pathname || '/credentials'
+  const from = location.state?.from?.pathname || '/credentials'
 
   function isAuthenticated() {
     if (Cookies.get('oa_db_token')) {

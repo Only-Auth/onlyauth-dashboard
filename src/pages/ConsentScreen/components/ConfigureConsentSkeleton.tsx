@@ -7,7 +7,7 @@ function ConfigureConsentSkeleton() {
       <h1 className="text-xl">App Info :</h1>
       <div className="pl-2 mb-2">
         <div className="grid w-full max-w-sm items-center gap-1.5 mb-4">
-          <Label htmlFor="appname">Name</Label>
+          <Label htmlFor="appname">Title</Label>
           <Skeleton className="h-4" />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
